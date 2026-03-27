@@ -1,101 +1,69 @@
-import Image from "next/image";
+import Link from "next/link";
+import { AuthActions } from "@/components/auth/auth-actions";
+import { ROUTES } from "@/lib/routes";
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="relative min-h-screen ms-page-bg text-[var(--ms-fg)]">
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-[55vh] bg-gradient-to-b from-[var(--ms-accent)]/[0.07] via-transparent to-transparent"
+        aria-hidden
+      />
+      <div className="pointer-events-none absolute right-0 top-32 h-72 w-72 rounded-full bg-[var(--ms-calm)]/[0.06] blur-3xl md:right-[15%]" />
+      <div className="pointer-events-none absolute bottom-24 left-0 h-56 w-56 rounded-full bg-[var(--ms-accent-deep)]/20 blur-3xl" />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      <div className="relative z-10 mx-auto flex min-h-screen max-w-lg flex-col justify-center gap-12 px-6 py-16 sm:max-w-xl md:py-24">
+        <div className="space-y-6 text-center">
+          <p className="font-display text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[var(--ms-muted-fg)]">
+            Côte d’Ivoire
+          </p>
+          <h1 className="font-display text-[2.35rem] font-bold leading-[1.12] tracking-tight text-[var(--ms-fg)] sm:text-5xl md:text-[3.15rem]">
+            Mind
+            <span className="bg-gradient-to-r from-[var(--ms-accent)] via-[var(--ms-calm)] to-[var(--ms-accent-muted)] bg-clip-text text-transparent">
+              Stress
+            </span>
+          </h1>
+          <p className="mx-auto max-w-md text-[0.95rem] leading-[1.65] text-[var(--ms-muted-fg)] sm:text-base">
+            Un espace calme pour parler du stress sans tabou — pensé pour toi, avec bienveillance et
+            des outils concrets.
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="ms-card mx-auto w-full max-w-md p-6 sm:p-8">
+          <p className="text-center text-sm leading-relaxed text-[var(--ms-muted-fg)]">
+            Ici, tu peux respirer : chaque pas compte vers un peu plus de légèreté.
+          </p>
+          <div className="mt-8 flex w-full flex-col items-stretch gap-4">
+            <AuthActions variant="landing" />
+            <Link
+              href={ROUTES.home}
+              className="group relative flex min-h-[50px] w-full items-center justify-center overflow-hidden rounded-xl font-display text-[0.95rem] font-semibold text-white transition"
+            >
+              <span className="absolute inset-0 bg-gradient-to-r from-[var(--ms-accent-muted)] via-[var(--ms-accent-deep)] to-[var(--ms-accent-muted)] transition duration-300 group-hover:opacity-95" />
+              <span className="relative flex items-center gap-2 px-6">
+                Découvrir l’app
+                <svg
+                  className="h-4 w-4 opacity-90 transition group-hover:translate-x-0.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden
+                >
+                  <path
+                    d="M5 12h14m-6-6l6 6-6 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </Link>
+          </div>
+          <p className="mt-6 text-center text-[0.7rem] leading-relaxed text-[var(--ms-muted-fg)]">
+            Gratuit pour commencer · Données protégées
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
