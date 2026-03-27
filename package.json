@@ -7,20 +7,34 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "emulators": "npx --yes firebase-tools@14 emulators:start --only firestore,auth"
+    "emulators": "npx --yes firebase-tools@14 emulators:start --only firestore,auth",
+    "db:init": "node scripts/run-pg.cjs scripts/sql/001_mindstress_init.sql",
+    "db:seed": "node scripts/run-pg.cjs scripts/sql/002_seed_demo.sql",
+    "insforge": "insforge",
+    "insforge:login": "insforge login",
+    "insforge:logout": "insforge logout",
+    "insforge:whoami": "insforge whoami",
+    "insforge:link": "insforge link",
+    "insforge:metadata": "insforge metadata",
+    "insforge:diagnose": "insforge diagnose",
+    "insforge:db": "insforge db",
+    "insforge:docs": "insforge docs"
   },
   "dependencies": {
+    "@insforge/sdk": "^1.2.0",
     "firebase": "^12.11.0",
     "next": "14.2.35",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@insforge/cli": "^0.1.32",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
+    "pg": "^8.20.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
