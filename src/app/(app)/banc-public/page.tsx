@@ -156,7 +156,7 @@ export default function BancPublicPage() {
             <button
               type="submit"
               disabled={sending || !ready}
-              className="self-end rounded-xl bg-[var(--ms-accent)] px-4 py-2 text-sm font-semibold text-[#fffef9] disabled:opacity-50"
+              className="self-end rounded-xl bg-[var(--ms-accent)] px-4 py-2 text-sm font-semibold text-[var(--ms-accent-fg)] disabled:opacity-50"
             >
               {sending ? "⏳" : "📤 Publier"}
             </button>

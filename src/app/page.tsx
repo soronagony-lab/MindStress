@@ -5,6 +5,9 @@ import { ROUTES } from "@/lib/routes";
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen ms-page-bg text-[var(--ms-fg)]">
+      <a href="#main-content" className="ms-skip-link">
+        Aller au contenu
+      </a>
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-[55vh] bg-gradient-to-b from-[var(--ms-accent)]/[0.07] via-transparent to-transparent"
         aria-hidden
@@ -12,7 +15,11 @@ export default function LandingPage() {
       <div className="pointer-events-none absolute right-0 top-32 h-72 w-72 rounded-full bg-[var(--ms-calm)]/[0.06] blur-3xl md:right-[15%]" />
       <div className="pointer-events-none absolute bottom-24 left-0 h-56 w-56 rounded-full bg-[var(--ms-accent-deep)]/20 blur-3xl" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-lg flex-col justify-center gap-12 px-6 py-16 sm:max-w-xl md:py-24">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="relative z-10 mx-auto flex min-h-screen max-w-lg scroll-mt-24 flex-col justify-center gap-12 px-6 py-16 outline-none sm:max-w-xl md:py-24"
+      >
         <div className="space-y-6 text-center">
           <p className="font-display text-[0.7rem] font-semibold uppercase tracking-[0.28em] text-[var(--ms-muted-fg)]">
             Côte d’Ivoire
@@ -37,7 +44,7 @@ export default function LandingPage() {
             <AuthActions variant="landing" />
             <Link
               href={ROUTES.home}
-              className="group relative flex min-h-[50px] w-full items-center justify-center overflow-hidden rounded-xl font-display text-[0.95rem] font-semibold text-white transition"
+              className="group relative flex min-h-[50px] w-full items-center justify-center overflow-hidden rounded-xl font-display text-[0.95rem] font-semibold text-[var(--ms-accent-fg)] transition"
             >
               <span className="absolute inset-0 bg-gradient-to-r from-[var(--ms-accent-muted)] via-[var(--ms-accent-deep)] to-[var(--ms-accent-muted)] transition duration-300 group-hover:opacity-95" />
               <span className="relative flex items-center gap-2 px-6">
@@ -63,7 +70,7 @@ export default function LandingPage() {
             Gratuit pour commencer · Données protégées
           </p>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

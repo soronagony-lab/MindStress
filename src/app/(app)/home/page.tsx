@@ -1,8 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ROUTES } from "@/lib/routes";
+import { fetchUserMetrics } from "@/lib/firestore/user-metrics";
+import {
+  defaultSomatic,
+  fetchTodayProgress,
+  saveTodayProgress,
+} from "@/lib/firestore/user-progress";
+import { useFirebaseAuth } from "@/providers/firebase-provider";
 import type { SomaticZone } from "@/types/mindstress";
 
 const zones: { id: SomaticZone; label: string; emoji: string; hint: string }[] = [
@@ -39,7 +46,10 @@ const shortcuts = [
   },
 ] as const;
 
+const SAVE_MS = 900;
+
 export default function HomePage() {
+  const { user, appId, ready } = useFirebaseAuth();
   const [gnan, setGnan] = useState(42);
   const [intensity, setIntensity] = useState<Record<SomaticZone, 0 | 1 | 2 | 3>>({
     tete: 1,
@@ -47,6 +57,52 @@ export default function HomePage() {
     ventre: 1,
     dos: 0,
   });
+  const progressReady = useRef(false);
+  const [metricsHint, setMetricsHint] = useState<string | null>(null);
+
+  useEffect(() => {
+    progressReady.current = false;
+    if (!ready || !user || !appId) return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const [today, m] = await Promise.all([
+          fetchTodayProgress(appId, user.uid),
+          fetchUserMetrics(appId, user.uid),
+        ]);
+        if (cancelled) return;
+        if (today) {
+          setGnan(today.gnan);
+          setIntensity({ ...defaultSomatic(), ...today.somatic });
+        }
+        if (m) {
+          setMetricsHint(
+            `Série : ${m.activeStreakDays} j · Connexions : ${m.loginCount} · Ouvertures : ${m.sessionOpens}`
+          );
+        } else {
+          setMetricsHint(null);
+        }
+      } finally {
+        if (!cancelled) progressReady.current = true;
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, user, appId]);
+
+  const persist = useCallback(() => {
+    if (!ready || !user || !appId || !progressReady.current) return;
+    void saveTodayProgress(appId, user.uid, { gnan, somatic: intensity }).catch(
+      () => {}
+    );
+  }, [ready, user, appId, gnan, intensity]);
+
+  useEffect(() => {
+    if (!ready || !user || !appId) return;
+    const t = setTimeout(persist, SAVE_MS);
+    return () => clearTimeout(t);
+  }, [ready, user, appId, gnan, intensity, persist]);
 
   const somaticSummary = useMemo(() => {
     return zones.map((z) => ({
@@ -65,6 +121,9 @@ export default function HomePage() {
           🌲 Comme un bol d’air vert : pas de jugement, à ton rythme. Chaque petit pas compte pour
           alléger le stress et retrouver un peu de légèreté.
         </p>
+        {user && appId && metricsHint && (
+          <p className="mt-3 text-xs text-[var(--ms-muted-fg)]/80">{metricsHint}</p>
+        )}
       </div>
 
       <section className="ms-card p-5 md:p-6">
@@ -100,6 +159,7 @@ export default function HomePage() {
         </h2>
         <p className="mt-1 text-sm text-[var(--ms-muted-fg)]">
           🎯 Un repère simple pour ta journée — ajuste comme tu le sens, sans te mettre la pression.
+          {user && appId ? " Enregistré automatiquement pour aujourd’hui." : ""}
         </p>
         <div className="mt-4 flex flex-wrap items-end gap-4">
           <div className="text-5xl font-bold tabular-nums">{gnan}</div>
@@ -147,7 +207,7 @@ export default function HomePage() {
                       }
                       className={`h-9 min-w-[2.25rem] rounded-lg text-sm font-medium transition-colors ${
                         intensity[z.id] === n
-                          ? "bg-[var(--ms-accent)] text-[#fffef9]"
+                          ? "bg-[var(--ms-accent)] text-[var(--ms-accent-fg)]"
                           : "border border-[var(--ms-border)] bg-[var(--ms-surface)] hover:border-[var(--ms-accent)]"
                       }`}
                     >
@@ -160,7 +220,7 @@ export default function HomePage() {
           ))}
         </ul>
         <p className="mt-6 text-xs text-[var(--ms-muted-fg)]">
-          📝 Résumé (mémoire locale pour l’instant) :{" "}
+          📝 Résumé :{" "}
           {somaticSummary.map((s) => `${s.zone}=${s.niveau}`).join(", ")}
         </p>
       </section>

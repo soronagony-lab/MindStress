@@ -3,9 +3,7 @@
 import { doc, setDoc } from "firebase/firestore";
 import type { PrivateProfile, PublicProfile } from "@/types/mindstress";
 import { getDb } from "@/lib/firebase/client";
-import { COLLECTIONS } from "@/lib/firebase/paths";
-
-const PRIVATE_DOC = "main";
+import { COLLECTIONS, USER_SINGLE_DOC_ID } from "@/lib/firebase/paths";
 
 export async function saveUserProfiles(
   appId: string,
@@ -23,7 +21,7 @@ export async function saveUserProfiles(
     "users",
     userId,
     COLLECTIONS.privateProfile,
-    PRIVATE_DOC
+    USER_SINGLE_DOC_ID
   );
 
   const publicRef = doc(

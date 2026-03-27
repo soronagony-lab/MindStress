@@ -23,6 +23,39 @@ export type GnanScore = {
 /** Diagnostic somatique par zone */
 export type SomaticZone = "tete" | "coeur" | "ventre" | "dos";
 
+/**
+ * Métriques agrégées — document `metrics/main` sous l’utilisateur.
+ * Connexion / déconnexion / inscription profil + usage (sessions, série).
+ */
+export type UserMetrics = {
+  firstSeenAt: number;
+  updatedAt: number;
+  lastLoginAt: number;
+  lastLogoutAt: number | null;
+  /** Nombre de clics « Connexion » réussis */
+  loginCount: number;
+  /** Nombre de déconnexions explicites */
+  logoutCount: number;
+  /** Ouvertures d’app comptées une fois par session navigateur */
+  sessionOpens: number;
+  /** Jour civil dernier passage (YYYY-MM-DD local), pour la série */
+  lastActiveDay: string;
+  /** Jours consécutifs avec au moins une ouverture comptée */
+  activeStreakDays: number;
+  /** Horodatage quand le formulaire profil a été enregistré (inscription) */
+  profileCompletedAt: number | null;
+};
+
+/**
+ * Snapshot quotidien — document `progress_entries/{yyyy-mm-dd}`.
+ */
+export type ProgressDayEntry = {
+  dayId: string;
+  gnan: number;
+  somatic: Record<SomaticZone, 0 | 1 | 2 | 3>;
+  updatedAt: number;
+};
+
 export type SomaticEntry = {
   zone: SomaticZone;
   intensity: 0 | 1 | 2 | 3;

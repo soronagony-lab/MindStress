@@ -2,50 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
-/* MindStress — apaisement & clarté (forêt douce, pas néon) */
+/*
+ * MindStress — palette « feuille » (macro) :
+ * ombres #1B5E20 / #2E7D32, base #388E3C / #43A047,
+ * highlights #8BC34A / #C5E1A5, nervures #F1F8E9 / #DCEDC8
+ */
 :root {
-  --background: #060a08;
-  --foreground: #e8f5ee;
-  --ms-bg: #060a08;
-  --ms-fg: #e8f5ee;
-  --ms-surface: #0c1410;
-  --ms-elevated: #111c16;
-  --ms-border: rgba(180, 220, 200, 0.08);
-  --ms-accent: #5ee9b5;
-  --ms-accent-muted: #3db892;
-  --ms-accent-deep: #0f6b4f;
-  --ms-accent-dim: rgba(94, 233, 181, 0.1);
-  --ms-accent-fg: #f4fffa;
-  --ms-calm: #7dd3b8;
-  --ms-calm-dim: rgba(125, 211, 184, 0.08);
-  --ms-muted: #152019;
-  --ms-muted-fg: #8aa898;
-  --ms-glow: rgba(94, 233, 181, 0.22);
-  --ms-glow-soft: rgba(45, 120, 95, 0.35);
+  --background: #0c1610;
+  --foreground: #f1f8e9;
+  --ms-bg: #0c1610;
+  --ms-fg: #f1f8e9;
+  --ms-surface: #15251c;
+  --ms-elevated: #1b2f24;
+  --ms-border: rgba(220, 237, 200, 0.1);
+  --ms-accent: #9ccc65;
+  --ms-accent-muted: #8bc34a;
+  --ms-accent-deep: #2e7d32;
+  --ms-accent-dim: rgba(139, 195, 74, 0.14);
+  --ms-accent-fg: #0d160d;
+  --ms-calm: #aed581;
+  --ms-calm-dim: rgba(174, 213, 129, 0.1);
+  --ms-muted: #0f1f16;
+  --ms-muted-fg: #9ccc9c;
+  --ms-glow: rgba(139, 195, 74, 0.32);
+  --ms-glow-soft: rgba(46, 125, 50, 0.38);
   --ms-radius: 1rem;
   --ms-radius-lg: 1.25rem;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --background: #f3f8f5;
-    --foreground: #13261c;
-    --ms-bg: #eef6f1;
-    --ms-fg: #13261c;
+    --background: #f1f8e9;
+    --foreground: #1b5e20;
+    --ms-bg: #f1f8e9;
+    --ms-fg: #1b5e20;
     --ms-surface: #ffffff;
-    --ms-elevated: #f7fbf8;
-    --ms-border: rgba(19, 38, 28, 0.09);
-    --ms-accent: #0d9f6e;
-    --ms-accent-muted: #0a7a55;
-    --ms-accent-deep: #056644;
-    --ms-accent-dim: rgba(13, 159, 110, 0.1);
+    --ms-elevated: #f9fff5;
+    --ms-border: rgba(27, 94, 32, 0.12);
+    --ms-accent: #43a047;
+    --ms-accent-muted: #388e3c;
+    --ms-accent-deep: #2e7d32;
+    --ms-accent-dim: rgba(67, 160, 71, 0.12);
     --ms-accent-fg: #ffffff;
-    --ms-calm: #0f766e;
-    --ms-calm-dim: rgba(15, 118, 110, 0.08);
-    --ms-muted: #e2ede6;
-    --ms-muted-fg: #4a6356;
-    --ms-glow: rgba(13, 159, 110, 0.2);
-    --ms-glow-soft: rgba(13, 159, 110, 0.12);
+    --ms-calm: #558b2f;
+    --ms-calm-dim: rgba(85, 139, 47, 0.08);
+    --ms-muted: #e8f5e9;
+    --ms-muted-fg: #558b2f;
+    --ms-glow: rgba(67, 160, 71, 0.22);
+    --ms-glow-soft: rgba(46, 125, 50, 0.14);
   }
 }
 
@@ -57,29 +61,45 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Fond : brume + une seule grille très discrète */
+/* Accessibilité : lien « passer au contenu » (visible au focus clavier) */
+.ms-skip-link {
+  @apply pointer-events-none fixed left-4 top-4 z-[100] -translate-y-24 rounded-xl px-4 py-2.5 text-sm font-semibold opacity-0 transition-transform duration-200;
+  background: var(--ms-accent);
+  color: var(--ms-accent-fg);
+  box-shadow: 0 4px 20px var(--ms-glow);
+}
+.ms-skip-link:focus {
+  pointer-events: auto;
+  transform: translateY(0);
+  opacity: 1;
+  outline: 2px solid var(--ms-accent-fg);
+  outline-offset: 2px;
+}
+
+/* Fond : halos type clair sur feuille + grille discrète (nervation) */
 .ms-page-bg {
   background-color: var(--ms-bg);
   background-image:
-    radial-gradient(ellipse 100% 70% at 50% -20%, rgba(94, 233, 181, 0.07), transparent 55%),
-    radial-gradient(ellipse 50% 40% at 90% 60%, rgba(45, 120, 95, 0.12), transparent 50%),
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 56px 56px;
-  background-position: center, center, 0 0;
+    radial-gradient(ellipse 100% 65% at 50% -15%, rgba(139, 195, 74, 0.11), transparent 58%),
+    radial-gradient(ellipse 45% 42% at 88% 55%, rgba(46, 125, 50, 0.14), transparent 52%),
+    radial-gradient(ellipse 35% 30% at 12% 75%, rgba(200, 230, 201, 0.05), transparent 50%),
+    linear-gradient(rgba(220, 237, 200, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 52px 52px;
+  background-position: center, center, center, 0 0;
 }
 
 .ms-glass {
-  background: rgba(12, 20, 16, 0.65);
+  background: rgba(21, 37, 28, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--ms-border);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 24px rgba(13, 27, 18, 0.35);
 }
 
 @media (prefers-color-scheme: light) {
   .ms-glass {
-    background: rgba(255, 255, 255, 0.78);
-    box-shadow: 0 4px 32px rgba(19, 38, 28, 0.06);
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 4px 32px rgba(27, 94, 32, 0.07);
   }
 }
 
@@ -92,7 +112,7 @@ body {
 
 @media (prefers-color-scheme: light) {
   .ms-card {
-    box-shadow: 0 2px 20px rgba(19, 38, 28, 0.05);
+    box-shadow: 0 2px 20px rgba(27, 94, 32, 0.06);
   }
 }
 
@@ -133,7 +153,7 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 .ms-btn-secondary:hover:not(:disabled) {
-  border-color: rgba(94, 233, 181, 0.35);
+  border-color: rgba(139, 195, 74, 0.4);
   background: var(--ms-surface);
 }
 .ms-btn-secondary:focus-visible {
@@ -159,30 +179,30 @@ body {
 }
 .ms-nav-pill:hover {
   color: var(--ms-fg);
-  background: rgba(94, 233, 181, 0.06);
+  background: rgba(139, 195, 74, 0.08);
 }
 .ms-nav-pill-active {
   color: var(--ms-fg);
   background: linear-gradient(
     145deg,
-    rgba(94, 233, 181, 0.2) 0%,
-    rgba(45, 120, 95, 0.25) 100%
+    rgba(139, 195, 74, 0.22) 0%,
+    rgba(46, 125, 50, 0.28) 100%
   );
-  border: 1px solid rgba(94, 233, 181, 0.28);
+  border: 1px solid rgba(174, 213, 129, 0.35);
   box-shadow: 0 2px 16px var(--ms-glow-soft);
 }
 
 @media (prefers-color-scheme: light) {
   .ms-nav-pill:hover {
-    background: rgba(13, 159, 110, 0.08);
+    background: rgba(67, 160, 71, 0.1);
   }
   .ms-nav-pill-active {
     background: linear-gradient(
       145deg,
-      rgba(13, 159, 110, 0.15) 0%,
-      rgba(5, 102, 68, 0.12) 100%
+      rgba(67, 160, 71, 0.16) 0%,
+      rgba(46, 125, 50, 0.14) 100%
     );
-    border-color: rgba(13, 159, 110, 0.25);
+    border-color: rgba(46, 125, 50, 0.28);
   }
 }
 

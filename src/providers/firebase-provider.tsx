@@ -22,6 +22,11 @@ import {
   getInforgeFirebaseConfig,
   getInitialAuthToken,
 } from "@/lib/firebase/inforge";
+import {
+  recordAuthLogin,
+  recordAuthLogout,
+  recordSessionOpen,
+} from "@/lib/firestore/user-metrics";
 
 type FirebaseContextValue = {
   user: User | null;
@@ -100,6 +105,15 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
       } else {
         await signInAnonymously(auth);
       }
+      const uid = auth.currentUser?.uid;
+      const aid = getAppId();
+      if (uid && aid) {
+        try {
+          await recordAuthLogin(aid, uid);
+        } catch {
+          /* métriques non bloquantes */
+        }
+      }
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
     } finally {
@@ -113,13 +127,26 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const auth = getFirebaseAuth();
+      const uid = auth.currentUser?.uid;
+      const aid = appId ?? getAppId();
+      if (uid && aid) {
+        try {
+          await recordAuthLogout(aid, uid);
+        } catch {
+          /* métriques non bloquantes */
+        }
+      }
+      if (typeof sessionStorage !== "undefined" && uid) {
+        sessionStorage.removeItem(`ms_metrics_sess_${uid}`);
+        sessionStorage.removeItem(`ms_login_sess_${uid}`);
+      }
       await firebaseSignOut(auth);
     } catch (e) {
       setError(e instanceof Error ? e : new Error(String(e)));
     } finally {
       setAuthBusy(false);
     }
-  }, [ready]);
+  }, [ready, appId]);
 
   useEffect(() => {
     if (!ready) return;
@@ -135,6 +162,22 @@ export function FirebaseProvider({ children }: { children: ReactNode }) {
     }
     return () => unsub?.();
   }, [ready]);
+
+  /** Première connexion comptée par session d’onglet (rechargement inclus). */
+  useEffect(() => {
+    if (!ready || !user || !appId) return;
+    if (typeof sessionStorage === "undefined") return;
+    const key = `ms_login_sess_${user.uid}`;
+    if (sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, "1");
+    void recordAuthLogin(appId, user.uid).catch(() => {});
+  }, [ready, user, appId]);
+
+  /** Une ouverture d’app par session navigateur + série (jour local). */
+  useEffect(() => {
+    if (!ready || !user || !appId) return;
+    void recordSessionOpen(appId, user.uid).catch(() => {});
+  }, [ready, user, appId]);
 
   const value = useMemo<FirebaseContextValue>(
     () => ({

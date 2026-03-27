@@ -5,16 +5,36 @@ type Body = {
   messages?: { role: "user" | "assistant"; content: string }[];
 };
 
+const MAX_MESSAGES = 32;
+const MAX_CHARS_PER_MESSAGE = 8000;
+
+function sanitizeMessages(
+  raw: Body["messages"]
+): { role: "user" | "assistant"; content: string }[] | null {
+  if (!Array.isArray(raw)) return null;
+  const out: { role: "user" | "assistant"; content: string }[] = [];
+  for (const m of raw.slice(-MAX_MESSAGES)) {
+    if (!m || (m.role !== "user" && m.role !== "assistant")) continue;
+    const content =
+      typeof m.content === "string"
+        ? m.content.slice(0, MAX_CHARS_PER_MESSAGE)
+        : "";
+    if (!content.trim()) continue;
+    out.push({ role: m.role, content });
+  }
+  return out.length ? out : null;
+}
+
 /**
  * Appel REST Gemini (clé côté serveur uniquement).
  * Définir GEMINI_API_KEY dans l’environnement (Inforge / secrets).
  */
 export async function POST(req: Request) {
   const json = (await req.json()) as Body;
-  const messages = json.messages ?? [];
-  if (messages.length === 0) {
+  const messages = sanitizeMessages(json.messages);
+  if (!messages) {
     return NextResponse.json(
-      { error: "Aucun message à envoyer." },
+      { error: "Aucun message valide à envoyer." },
       { status: 400 }
     );
   }

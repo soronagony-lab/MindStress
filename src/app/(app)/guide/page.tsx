@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Guide de survie — MindStress",
+  title: "Guide de survie",
   description:
     "Fiches tactiques pour les moments difficiles — MindStress, Côte d’Ivoire.",
 };

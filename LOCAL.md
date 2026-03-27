@@ -47,6 +47,18 @@ Ouvre [http://localhost:3000](http://localhost:3000).
 
 Les chemins Firestore restent `/artifacts/{appId}/...` avec **`appId = local`** par défaut (ou `NEXT_PUBLIC_APP_ID`).
 
+### Schéma des données (collections)
+
+| Chemin | Rôle |
+|--------|------|
+| `artifacts/{appId}/users/{uid}/profile/main` | Profil privé (nom, téléphone, e-mail) |
+| `artifacts/{appId}/users/{uid}/metrics/main` | Métriques : connexions, déconnexions, série de jours, inscription profil |
+| `artifacts/{appId}/users/{uid}/progress_entries/{yyyy-mm-dd}` | Snapshot du jour : score Gnan + intensités somatiques |
+| `artifacts/{appId}/public/data/profiles/{uid}` | Pseudonyme public (Banc) |
+| `artifacts/{appId}/public/data/banc_messages/*` | Messages du Banc public |
+
+Les règles de sécurité sont dans `firestore.rules` (accès utilisateur authentifié à ses propres documents sous `users/{uid}`).
+
 ### 5. Dr. Mind (IA)
 
 `GEMINI_API_KEY` dans `.env.local` si tu veux tester le chat (clé Google AI, hors Firebase).

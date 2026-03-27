@@ -4,12 +4,17 @@
  */
 
 export const COLLECTIONS = {
-  /** Sous-collection privée : artifacts/{appId}/users/{userId}/profile */
+  /** Sous-collection privée : artifacts/{appId}/users/{userId}/profile/{docId} */
   privateProfile: "profile",
+  /** Métriques compte : artifacts/{appId}/users/{userId}/metrics/main */
+  userMetrics: "metrics",
+  /** Historique progression : artifacts/{appId}/users/{userId}/progress_entries/{yyyy-mm-dd} */
+  progressEntries: "progress_entries",
   /** Collection publique : artifacts/{appId}/public/data/profiles */
   publicProfiles: "profiles",
   bancMessages: "banc_messages",
   drMindThreads: "dr_mind_threads",
-  gnanScores: "gnan_scores",
-  somatic: "somatic_entries",
 } as const;
+
+/** ID de document unique pour profil / métriques agrégées */
+export const USER_SINGLE_DOC_ID = "main" as const;

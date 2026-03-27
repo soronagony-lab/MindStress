@@ -5,9 +5,11 @@ import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
 import { useFirebaseAuth } from "@/providers/firebase-provider";
 import { saveUserProfiles } from "@/lib/firestore/profiles";
+import { deleteUserFirestoreData } from "@/lib/firestore/user-lifecycle";
+import { markProfileCompleted } from "@/lib/firestore/user-metrics";
 
 export default function AuthPage() {
-  const { user, loading, appId, ready, retryInit } = useFirebaseAuth();
+  const { user, loading, appId, ready, retryInit, signOut } = useFirebaseAuth();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -15,6 +17,7 @@ export default function AuthPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [purgeBusy, setPurgeBusy] = useState(false);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -39,6 +42,7 @@ export default function AuthPage() {
         },
         { pseudonym: pseudonym.trim() }
       );
+      await markProfileCompleted(appId, user.uid);
       setSaved(true);
     } catch (err) {
       setFormError(err instanceof Error ? err.message : "❌ Enregistrement impossible pour l’instant.");
@@ -70,7 +74,7 @@ export default function AuthPage() {
           <button
             type="button"
             onClick={() => retryInit()}
-            className="rounded-full bg-[var(--ms-accent)] px-5 py-2 text-sm font-medium text-[#fffef9]"
+            className="rounded-full bg-[var(--ms-accent)] px-5 py-2 text-sm font-medium text-[var(--ms-accent-fg)]"
           >
             🔄 Réessayer
           </button>
@@ -138,11 +142,53 @@ export default function AuthPage() {
           <button
             type="submit"
             disabled={saving}
-            className="rounded-full bg-[var(--ms-accent)] px-6 py-2.5 text-sm font-medium text-[#fffef9] disabled:opacity-60"
+            className="rounded-full bg-[var(--ms-accent)] px-6 py-2.5 text-sm font-medium text-[var(--ms-accent-fg)] disabled:opacity-60"
           >
             {saving ? "⏳ Enregistrement…" : "💾 Enregistrer mon profil"}
           </button>
         </form>
+      )}
+
+      {ready && user && (
+        <div className="rounded-2xl border border-red-500/25 bg-red-500/5 p-5">
+          <h2 className="text-sm font-semibold text-[var(--ms-fg)]">
+            Désinscription & données
+          </h2>
+          <p className="mt-2 text-xs leading-relaxed text-[var(--ms-muted-fg)]">
+            Supprime ton profil, tes métriques et ta progression sur ce compte Firestore, puis te déconnecte.
+            Ton compte anonyme sera recréé à la prochaine connexion.
+          </p>
+          <button
+            type="button"
+            disabled={purgeBusy}
+            onClick={() => {
+              if (!appId || !user) return;
+              if (
+                !window.confirm(
+                  "Effacer toutes tes données MindStress sur ce compte et te déconnecter ?"
+                )
+              ) {
+                return;
+              }
+              setPurgeBusy(true);
+              void (async () => {
+                try {
+                  await deleteUserFirestoreData(appId, user.uid);
+                  await signOut();
+                } catch (e) {
+                  setFormError(
+                    e instanceof Error ? e.message : "Suppression impossible pour l’instant."
+                  );
+                } finally {
+                  setPurgeBusy(false);
+                }
+              })();
+            }}
+            className="mt-4 rounded-full border border-red-500/40 bg-transparent px-4 py-2 text-xs font-medium text-red-700 dark:text-red-300 disabled:opacity-60"
+          >
+            {purgeBusy ? "⏳ …" : "🗑️ Effacer mes données et me déconnecter"}
+          </button>
+        </div>
       )}
     </div>
   );

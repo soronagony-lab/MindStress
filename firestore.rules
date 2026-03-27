@@ -1,9 +1,38 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Émulateur local uniquement — ouvre tout pour le dev (ne pas réutiliser tel quel en prod)
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    /** Données privées utilisateur (profil, métriques, progression, etc.) */
+    match /artifacts/{appId}/users/{userId}/{document=**} {
+      allow read, write: if isOwner(userId);
+    }
+
+    /** Pseudonymes publics — lecture ouverte, écriture par le propriétaire */
+    match /artifacts/{appId}/public/data/profiles/{profileId} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(profileId);
+    }
+
+    /** Banc public — lecture ouverte, création authentifiée avec cohérence authorUid */
+    match /artifacts/{appId}/public/data/banc_messages/{msgId} {
+      allow read: if true;
+      allow create: if signedIn()
+        && request.resource.data.authorUid == request.auth.uid
+        && request.resource.data.keys().hasAll(['threadId', 'authorUid', 'pseudonym', 'text', 'createdAt']);
+      allow update, delete: if false;
+    }
+
+    /** Par défaut : refus (ajuste si Inforge ajoute d’autres chemins sous artifacts) */
     match /{document=**} {
-      allow read, write: if true;
+      allow read, write: if false;
     }
   }
 }

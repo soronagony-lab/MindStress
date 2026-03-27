@@ -70,6 +70,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="relative min-h-screen ms-page-bg text-[var(--ms-fg)]">
+      <a href="#main-content" className="ms-skip-link">
+        Aller au contenu
+      </a>
       <div
         className="pointer-events-none fixed inset-x-0 top-0 h-64 bg-gradient-to-b from-[var(--ms-accent-dim)] to-transparent"
         aria-hidden
@@ -82,7 +85,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               href={ROUTES.home}
               className="group flex items-center gap-3.5 font-display"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--ms-accent-muted)] to-[var(--ms-accent-deep)] text-white shadow-md shadow-[var(--ms-glow-soft)] ring-1 ring-white/10 transition group-hover:scale-[1.02]">
+              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--ms-accent-muted)] to-[var(--ms-accent-deep)] text-[var(--ms-accent-fg)] shadow-md shadow-[var(--ms-glow-soft)] ring-1 ring-[var(--ms-border)] transition group-hover:scale-[1.02]">
                 <LogoMark />
               </span>
               <span>
@@ -121,7 +124,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      <main className="relative z-0 mx-auto w-full max-w-3xl flex-1 px-5 pb-28 pt-8 md:max-w-4xl md:pb-12 md:pt-10">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="relative z-0 mx-auto w-full max-w-3xl flex-1 scroll-mt-28 px-5 pb-28 pt-8 outline-none md:max-w-4xl md:pb-12 md:pt-10"
+      >
         {children}
       </main>
 
